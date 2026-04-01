@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 500" width="1500" height="500">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0D1117;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#161B22;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#58A6FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2F81F7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="scanGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3FB950;stop-opacity:0" />
+      <stop offset="50%" style="stop-color:#3FB950;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3FB950;stop-opacity:0" />
+    </linearGradient>
+    <radialGradient id="glowBlue" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#2F81F7;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#2F81F7;stop-opacity:0" />
+    </radialGradient>
+    <radialGradient id="glowGreen" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#3FB950;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#3FB950;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1500" height="500" fill="url(#bgGrad)"/>
+
+  <!-- Subtle grid pattern -->
+  <g opacity="0.03" stroke="#F0F6FC" stroke-width="0.5">
+    <line x1="0" y1="100" x2="1500" y2="100"/><line x1="0" y1="200" x2="1500" y2="200"/>
+    <line x1="0" y1="300" x2="1500" y2="300"/><line x1="0" y1="400" x2="1500" y2="400"/>
+    <line x1="300" y1="0" x2="300" y2="500"/><line x1="600" y1="0" x2="600" y2="500"/>
+    <line x1="900" y1="0" x2="900" y2="500"/><line x1="1200" y1="0" x2="1200" y2="500"/>
+  </g>
+
+  <!-- Blue glow behind shield -->
+  <ellipse cx="300" cy="250" rx="200" ry="200" fill="url(#glowBlue)"/>
+
+  <!-- Shield icon (large) -->
+  <g transform="translate(200, 110) scale(2.2)">
+    <path d="M64 8 L112 28 L112 56 C112 84 92 108 64 120 C36 108 16 84 16 56 L16 28 Z"
+          fill="none" stroke="url(#shieldGrad)" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M64 14 L106 32 L106 56 C106 80 88 102 64 114 C40 102 22 80 22 56 L22 32 Z"
+          fill="#2F81F7" fill-opacity="0.06"/>
+    <line x1="36" y1="44" x2="92" y2="44" stroke="url(#scanGrad)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+    <line x1="32" y1="56" x2="96" y2="56" stroke="url(#scanGrad)" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+    <line x1="36" y1="68" x2="92" y2="68" stroke="url(#scanGrad)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+    <line x1="42" y1="80" x2="86" y2="80" stroke="url(#scanGrad)" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <circle cx="64" cy="56" r="12" fill="none" stroke="#3FB950" stroke-width="1.5" opacity="0.7"/>
+    <circle cx="64" cy="56" r="4" fill="#3FB950" opacity="0.9"/>
+    <line x1="64" y1="40" x2="64" y2="48" stroke="#3FB950" stroke-width="1.2" opacity="0.6"/>
+    <line x1="64" y1="64" x2="64" y2="72" stroke="#3FB950" stroke-width="1.2" opacity="0.6"/>
+    <line x1="48" y1="56" x2="56" y2="56" stroke="#3FB950" stroke-width="1.2" opacity="0.6"/>
+    <line x1="72" y1="56" x2="80" y2="56" stroke="#3FB950" stroke-width="1.2" opacity="0.6"/>
+  </g>
+
+  <!-- Text: MCP Scanner -->
+  <text x="620" y="210" font-family="Inter, system-ui, -apple-system, sans-serif"
+        font-size="72" font-weight="700" fill="#F0F6FC" letter-spacing="-1">
+    MCP Scanner
+  </text>
+
+  <!-- Tagline -->
+  <text x="620" y="275" font-family="Inter, system-ui, -apple-system, sans-serif"
+        font-size="30" font-weight="400" fill="#8B949E" letter-spacing="0.5">
+    Security scanner for MCP servers
+  </text>
+
+  <!-- Accent line -->
+  <rect x="620" y="300" width="80" height="3" rx="1.5" fill="#2F81F7"/>
+
+  <!-- Features row -->
+  <g font-family="'JetBrains Mono', 'Fira Code', monospace" font-size="18" fill="#58A6FF">
+    <text x="620" y="345">OWASP MCP Top 10</text>
+    <text x="860" y="345" fill="#30363D">|</text>
+    <text x="890" y="345">Open Source</text>
+    <text x="1060" y="345" fill="#30363D">|</text>
+    <text x="1090" y="345">CLI + CI/CD</text>
+  </g>
+
+  <!-- Install hint -->
+  <g transform="translate(620, 370)">
+    <rect width="360" height="36" rx="6" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+    <text x="16" y="24" font-family="'JetBrains Mono', 'Fira Code', monospace"
+          font-size="15" fill="#8B949E">$</text>
+    <text x="32" y="24" font-family="'JetBrains Mono', 'Fira Code', monospace"
+          font-size="15" fill="#3FB950">cargo install mcp-scanner</text>
+  </g>
+
+  <!-- Decorative scan lines at edges -->
+  <g opacity="0.06">
+    <line x1="0" y1="50" x2="100" y2="50" stroke="#3FB950" stroke-width="1"/>
+    <line x1="0" y1="450" x2="150" y2="450" stroke="#3FB950" stroke-width="1"/>
+    <line x1="1400" y1="80" x2="1500" y2="80" stroke="#2F81F7" stroke-width="1"/>
+    <line x1="1350" y1="420" x2="1500" y2="420" stroke="#2F81F7" stroke-width="1"/>
+  </g>
+</svg>

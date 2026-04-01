@@ -1,0 +1,96 @@
+# ============================================================================
+# MCP Security Scan — Dogfooding & Example Workflow
+# ============================================================================
+# This workflow demonstrates how to use the MCP Security Scanner GitHub Action.
+# Copy and adapt this file into your own repository.
+#
+# For the simplest usage, add to your workflow:
+#
+#   - uses: Norbi0801/mcp-audit@v1
+#     with:
+#       config: path/to/mcp.json
+#
+# See action.yml for all available inputs and outputs.
+# ============================================================================
+
+name: MCP Security Scan
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '*.json'
+      - '.mcp/**'
+      - 'action.yml'
+      - 'src/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - '*.json'
+      - '.mcp/**'
+      - 'action.yml'
+      - 'src/**'
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      config-path:
+        description: 'Path to MCP config file'
+        required: false
+        default: ''
+      severity:
+        description: 'Minimum severity'
+        required: false
+        default: 'low'
+        type: choice
+        options:
+          - critical
+          - high
+          - medium
+          - low
+          - info
+
+permissions:
+  contents: read
+  security-events: write
+  pull-requests: write
+
+jobs:
+  scan:
+    name: MCP Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+
+      # ── Use the local action (builds from source since not on crates.io yet) ──
+      - name: Run MCP Security Scanner
+        id: mcp-scan
+        uses: ./
+        with:
+          config: ${{ github.event.inputs.config-path || '' }}
+          severity: ${{ github.event.inputs.severity || 'low' }}
+          format: table
+          sarif-upload: 'false'
+          comment: 'false'
+          fail-on: high
+
+      # ── Use outputs for downstream steps ──
+      - name: Check scan results
+        if: always()
+        run: |
+          echo "Findings:  ${{ steps.mcp-scan.outputs.findings-count }}"
+          echo "Errors:    ${{ steps.mcp-scan.outputs.error-count }}"
+          echo "Warnings:  ${{ steps.mcp-scan.outputs.warning-count }}"
+          echo "Notes:     ${{ steps.mcp-scan.outputs.note-count }}"
+          echo "Exit code: ${{ steps.mcp-scan.outputs.exit-code }}"
+          echo "Badge:     ${{ steps.mcp-scan.outputs.badge-status }} (${{ steps.mcp-scan.outputs.badge-color }})"
+
+      # ── Example: Use badge output with shields.io ──
+      # Add this to your README.md:
+      #   ![MCP Security](https://img.shields.io/badge/MCP_Security-passing-brightgreen)
+      #
+      # Or use a dynamic badge endpoint:
+      # https://img.shields.io/endpoint?url=<your-badge-json-endpoint>

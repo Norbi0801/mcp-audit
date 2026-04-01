@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="194" height="20" role="img" aria-label="MCP Scanner: scanning">
+  <title>MCP Scanner: scanning</title>
+  <defs>
+    <linearGradient id="s" x2="0" y2="100%">
+      <stop offset="0" stop-color="#fff" stop-opacity=".1"/>
+      <stop offset="1" stop-opacity=".1"/>
+    </linearGradient>
+    <clipPath id="r">
+      <rect width="194" height="20" rx="3" fill="#fff"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#r)">
+    <rect width="106" height="20" fill="#30363D"/>
+    <rect x="106" width="88" height="20" fill="#D29922"/>
+    <rect width="194" height="20" fill="url(#s)"/>
+  </g>
+  <g fill="#fff" text-anchor="middle" font-family="Inter,Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="11">
+    <g transform="translate(10, 3.5)">
+      <path d="M6 0.5 L11 2.5 L11 5.5 C11 8.5 9 10.5 6 11.5 C3 10.5 1 8.5 1 5.5 L1 2.5 Z"
+            fill="none" stroke="#58A6FF" stroke-width="1" stroke-linejoin="round"/>
+      <circle cx="6" cy="5.5" r="2" fill="none" stroke="#D29922" stroke-width="0.8" opacity="0.8"/>
+      <circle cx="6" cy="5.5" r="0.7" fill="#D29922" opacity="0.9"/>
+    </g>
+    <text aria-hidden="true" x="62" y="15" fill="#010101" fill-opacity=".3">MCP Scanner</text>
+    <text x="62" y="14">MCP Scanner</text>
+    <text aria-hidden="true" x="149" y="15" fill="#010101" fill-opacity=".3">scanning</text>
+    <text x="149" y="14" font-weight="600">scanning</text>
+  </g>
+</svg>

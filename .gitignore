@@ -1,0 +1,34 @@
+# Build artifacts
+/target
+debug/
+*.d
+*.rlib
+*.rmeta
+*.so
+*.dylib
+*.dll
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+*.profraw
+*.profdata
+lcov.info
+tarpaulin-report.html
+
+# State directory (runtime data)
+.mcp-scanner/

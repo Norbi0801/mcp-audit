@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Primary Meta Tags -->
+  <title>MCP Audit — Security Auditing for MCP Servers | npm audit for MCP</title>
+  <meta name="title" content="MCP Audit — Security Auditing for MCP Servers">
+  <meta name="description" content="Open-source CLI security scanner for Model Context Protocol servers. Detects OWASP MCP Top 10 vulnerabilities. We scanned 50 top MCP servers — 30% had High or Critical flaws, 296 findings total. Scan yours in seconds.">
+  <meta name="keywords" content="mcp security scanner, mcp audit tool, mcp vulnerability scanner, mcp server security, owasp mcp top 10, model context protocol security, ai security, llm tool security">
+  <meta name="author" content="MCP Audit">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://github.com/Norbi0801/mcp-audit/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://github.com/Norbi0801/mcp-audit/">
+  <meta property="og:title" content="MCP Audit — npm audit for MCP servers">
+  <meta property="og:description" content="Open-source security scanner for MCP servers. Detects OWASP MCP Top 10 vulnerabilities in seconds.">
+  <!-- TODO: Replace SVG with PNG/JPG for better social media crawler support (Facebook, Twitter, LinkedIn prefer raster images) -->
+  <!-- Generate PNG: open og-image.svg in browser at 1200x630 and screenshot, or use: npx svg2png-many site/assets/og-image.svg -o site/assets/og-image.png -w 1200 -h 630 -->
+  <meta property="og:image" content="https://github.com/Norbi0801/mcp-audit/assets/og-image.svg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://github.com/Norbi0801/mcp-audit/">
+  <meta property="twitter:title" content="MCP Audit — npm audit for MCP servers">
+  <meta property="twitter:description" content="Open-source security scanner for MCP servers. Detects OWASP MCP Top 10 vulnerabilities in seconds.">
+  <meta property="twitter:image" content="https://github.com/Norbi0801/mcp-audit/assets/og-image.svg">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "MCP Audit",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Linux, macOS, Windows",
+    "description": "Open-source CLI security scanner for Model Context Protocol (MCP) servers. Detects OWASP MCP Top 10 vulnerabilities.",
+    "url": "https://github.com/Norbi0801/mcp-audit",
+    "downloadUrl": "https://github.com/Norbi0801/mcp-audit",
+    "softwareVersion": "0.1.0",
+    "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+    "offers": [
+      {
+        "@type": "Offer",
+        "name": "Free",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      {
+        "@type": "Offer",
+        "name": "Pro",
+        "price": "19",
+        "priceCurrency": "USD",
+        "billingIncrement": "P1M"
+      },
+      {
+        "@type": "Offer",
+        "name": "Team",
+        "price": "49",
+        "priceCurrency": "USD",
+        "billingIncrement": "P1M"
+      },
+      {
+        "@type": "Offer",
+        "price": "199",
+        "priceCurrency": "USD",
+        "billingIncrement": "P1M"
+      }
+    ],
+    "author": {
+      "@type": "Organization",
+      "name": "MCP Audit"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is MCP Audit?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "MCP Audit is an open-source CLI tool that audits Model Context Protocol (MCP) server configurations for security vulnerabilities based on OWASP MCP Top 10."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Is MCP Audit free?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes. The CLI tool is free and open source under AGPL-3.0. "
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What vulnerabilities does MCP Audit detect?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "MCP Audit detects all 10 categories from the OWASP MCP Top 10: Tool Poisoning, Excessive Permissions, Prompt Injection, Insecure Credentials, Server Spoofing, Insecure Dependencies, Command Injection, Data Exfiltration, Insufficient Logging, and Unauthorized Access."
+        }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'scanner-dark': '#0D1117',
+            'scanner-deep': '#161B22',
+            'scanner-border': '#30363D',
+            'shield-blue': '#2F81F7',
+            'shield-bright': '#58A6FF',
+            'pass-green': '#3FB950',
+            'warn-yellow': '#D29922',
+            'fail-red': '#F85149',
+            'deep-red': '#DA3633',
+            'info-gray': '#8B949E',
+            'text-primary': '#F0F6FC',
+            'text-body': '#C9D1D9',
+            'text-muted': '#484F58',
+          },
+          fontFamily: {
+            'sans': ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            'mono': ['JetBrains Mono', 'Fira Code', 'SF Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    /* Smooth scrolling */
+    html { scroll-behavior: smooth; }
+
+    /* Scan line animation */
+    @keyframes scanLine {
+      0% { transform: translateY(-100%); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(300%); opacity: 0; }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes terminalType {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .animate-fade-in-up {
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .animate-fade-in-up-delay-1 {
+      animation: fadeInUp 0.6s ease-out 0.15s forwards;
+      opacity: 0;
+    }
+
+    .animate-fade-in-up-delay-2 {
+      animation: fadeInUp 0.6s ease-out 0.3s forwards;
+      opacity: 0;
+    }
+
+    .animate-fade-in-up-delay-3 {
+      animation: fadeInUp 0.6s ease-out 0.45s forwards;
+      opacity: 0;
+    }
+
+    .scan-line {
+      animation: scanLine 3s ease-in-out infinite;
+    }
+
+    .pulse-dot {
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* Terminal cursor blink */
+    .cursor-blink::after {
+      content: '\2588';
+      animation: blink 1s step-end infinite;
+      color: #3FB950;
+    }
+
+    
+
+    /* Badge preview styling */
+    .badge-preview {
+      transition: transform 0.15s ease;
+    }
+    .badge-preview:hover {
+      transform: scale(1.05);
+    }
+
+    /* Feature card */
+    .feature-card {
+      transition: border-color 0.2s ease;
+    }
+    .feature-card:hover {
+      border-color: #2F81F7;
+    }
+
+    /* Mobile nav */
+    .mobile-nav {
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+    }
+  </style>
+</head>
+
+<body class="bg-scanner-dark text-text-primary font-sans antialiased">
+
+  <!-- ============================================== -->
+  <!-- NAVIGATION                                      -->
+  <!-- ============================================== -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-scanner-dark/90 backdrop-blur-md border-b border-scanner-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo -->
+        <a href="#" class="flex items-center gap-3 group" aria-label="MCP Audit Home">
+          <img src="assets/favicon.svg" alt="" width="32" height="32" class="group-hover:opacity-90 transition-opacity">
+          <span class="text-lg font-bold text-text-primary">MCP Audit</span>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex items-center gap-8">
+          <a href="#problem" class="text-sm text-info-gray hover:text-text-primary transition-colors">Problem</a>
+          <a href="#results" class="text-sm text-info-gray hover:text-text-primary transition-colors">Results</a>
+          <a href="#features" class="text-sm text-info-gray hover:text-text-primary transition-colors">Features</a>
+          <a href="#rules" class="text-sm text-info-gray hover:text-text-primary transition-colors">Rules</a>
+          
+          <a href="#badge" class="text-sm text-info-gray hover:text-text-primary transition-colors">Badge</a>
+          <a href="https://github.com/Norbi0801/mcp-audit" target="_blank" rel="noopener noreferrer"
+             class="text-sm text-info-gray hover:text-text-primary transition-colors flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            GitHub
+          </a>
+        </div>
+
+        <!-- Mobile menu button -->
+        <button type="button" id="mobile-menu-btn" class="md:hidden p-2 text-info-gray hover:text-text-primary"
+                aria-label="Toggle navigation menu" aria-expanded="false">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path id="menu-icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Mobile Navigation -->
+      <div id="mobile-nav" class="mobile-nav md:hidden overflow-hidden max-h-0 opacity-0">
+        <div class="py-4 space-y-3 border-t border-scanner-border">
+          <a href="#problem" class="block text-sm text-info-gray hover:text-text-primary py-1">Problem</a>
+          <a href="#results" class="block text-sm text-info-gray hover:text-text-primary py-1">Results</a>
+          <a href="#features" class="block text-sm text-info-gray hover:text-text-primary py-1">Features</a>
+          <a href="#rules" class="block text-sm text-info-gray hover:text-text-primary py-1">Rules</a>
+          
+          <a href="#badge" class="block text-sm text-info-gray hover:text-text-primary py-1">Badge</a>
+          <a href="https://github.com/Norbi0801/mcp-audit" target="_blank" rel="noopener noreferrer"
+             class="block text-sm text-info-gray hover:text-text-primary py-1">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============================================== -->
+  <!-- HERO SECTION                                    -->
+  <!-- ============================================== -->
+  <section class="relative min-h-screen flex items-center pt-16 overflow-hidden" aria-label="Hero">
+    <!-- Background scan lines (decorative) -->
+    <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+      <div class="absolute inset-0 opacity-[0.015]">
+        <div class="h-px w-full bg-pass-green absolute" style="top: 15%"></div>
+        <div class="h-px w-full bg-pass-green absolute" style="top: 30%"></div>
+        <div class="h-px w-full bg-pass-green absolute" style="top: 45%"></div>
+        <div class="h-px w-full bg-pass-green absolute" style="top: 60%"></div>
+        <div class="h-px w-full bg-pass-green absolute" style="top: 75%"></div>
+        <div class="h-px w-full bg-pass-green absolute" style="top: 90%"></div>
+      </div>
+      <!-- Radial glow -->
+      <div class="absolute top-0 left-1/4 w-[600px] h-[600px] bg-shield-blue/[0.06] rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
+      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <!-- Left: Text Content -->
+        <div>
+          <!-- Eyebrow -->
+          <div class="animate-fade-in-up inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-scanner-deep border border-scanner-border text-sm text-info-gray mb-6">
+            <span class="w-2 h-2 rounded-full bg-pass-green pulse-dot"></span>
+            Open source &middot; OWASP MCP Top 10
+          </div>
+
+          <!-- Headline -->
+          <h1 class="animate-fade-in-up-delay-1 text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight">
+            <span class="text-text-primary">Security scanner</span><br>
+            <span class="text-shield-blue">for MCP servers</span>
+          </h1>
+
+          <!-- Subheadline -->
+          <p class="animate-fade-in-up-delay-2 mt-6 text-lg sm:text-xl text-text-body leading-relaxed max-w-lg">
+            <strong class="text-text-primary">npm audit for MCP.</strong> Detect vulnerabilities in your Model Context Protocol server configurations before attackers do. OWASP-aligned, CI/CD-ready, built in Rust.
+          </p>
+
+          <!-- CTA Buttons -->
+          <div class="animate-fade-in-up-delay-3 mt-8 flex flex-wrap gap-4">
+            <a href="https://github.com/Norbi0801/mcp-audit" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center px-6 py-3 text-base font-semibold rounded-lg bg-shield-blue hover:bg-shield-bright text-white transition-colors shadow-lg shadow-shield-blue/20">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              Scan your MCP servers
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+          </div>
+
+          <!-- Install Command -->
+          <div class="animate-fade-in-up-delay-3 mt-8">
+            <div class="inline-flex items-center gap-3 px-4 py-3 rounded-lg bg-scanner-deep border border-scanner-border group cursor-pointer"
+                 onclick="navigator.clipboard.writeText('cargo install mcp-audit').then(()=>{this.querySelector('.copy-msg').textContent='Copied!';setTimeout(()=>{this.querySelector('.copy-msg').textContent='Click to copy'},2000)})"
+                 role="button" tabindex="0" aria-label="Copy install command">
+              <span class="text-info-gray font-mono text-sm">$</span>
+              <code class="text-pass-green font-mono text-sm">cargo install mcp-audit</code>
+              <span class="copy-msg text-text-muted text-xs ml-2 transition-colors">Click to copy</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Terminal Demo -->
+        <div class="hidden lg:block" aria-hidden="true">
+          <div class="rounded-xl border border-scanner-border bg-scanner-deep shadow-2xl overflow-hidden">
+            <!-- Terminal header -->
+            <div class="flex items-center gap-2 px-4 py-3 bg-scanner-dark border-b border-scanner-border">
+              <div class="w-3 h-3 rounded-full bg-fail-red/70"></div>
+              <div class="w-3 h-3 rounded-full bg-warn-yellow/70"></div>
+              <div class="w-3 h-3 rounded-full bg-pass-green/70"></div>
+              <span class="ml-3 text-xs text-text-muted font-mono">mcp-audit</span>
+            </div>
+            <!-- Terminal content -->
+            <div class="p-5 font-mono text-sm leading-relaxed">
+              <div class="text-info-gray">$ mcp-audit scan</div>
+              <div class="mt-3 text-shield-bright font-bold">MCP Audit v0.1.0</div>
+              <div class="text-text-muted">===========================================</div>
+              <div class="mt-2 text-text-body">Scanning: <span class="text-text-primary">claude_desktop_config.json</span></div>
+              <div class="text-text-body">Rules loaded: <span class="text-text-primary">10</span> <span class="text-info-gray">(OWASP MCP Top 10)</span></div>
+              <div class="mt-3 text-text-muted">-------------------------------------------</div>
+              <div class="mt-2 flex gap-2">
+                <span class="text-deep-red font-bold">CRITICAL</span>
+                <span class="text-text-body">MCP-04: Insecure Creds</span>
+              </div>
+              <div class="text-info-gray ml-[88px]">Hardcoded API key in env</div>
+              <div class="mt-1 flex gap-2">
+                <span class="text-fail-red font-bold">HIGH&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span class="text-text-body">MCP-02: Excessive Perms</span>
+              </div>
+              <div class="text-info-gray ml-[88px]">Access to / (root filesystem)</div>
+              <div class="mt-1 flex gap-2">
+                <span class="text-fail-red font-bold">HIGH&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span class="text-text-body">MCP-07: Command Injection</span>
+              </div>
+              <div class="text-info-gray ml-[88px]">Shell interpreter with args</div>
+              <div class="mt-1 flex gap-2">
+                <span class="text-warn-yellow font-bold">MEDIUM&nbsp;&nbsp;</span>
+                <span class="text-text-body">MCP-06: Insecure Deps</span>
+              </div>
+              <div class="text-info-gray ml-[88px]">Unpinned npx package version</div>
+              <div class="mt-3 text-text-muted">-------------------------------------------</div>
+              <div class="mt-2 text-text-body">Summary: <span class="text-text-primary">4 findings</span> <span class="text-info-gray">(1 critical, 2 high, 1 medium)</span></div>
+              <div class="text-fail-red font-bold mt-1">&cross; FAILED</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social proof bar -->
+      <div class="mt-16 lg:mt-24 flex flex-wrap justify-center gap-x-10 gap-y-4 text-info-gray text-sm">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-shield-bright" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          OWASP MCP Top 10
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-pass-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Built in Rust
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-warn-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Scans in &lt;5 seconds
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-fail-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+          30% of top 50 MCP servers have High+ vulnerabilities
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- PROBLEM SECTION                                 -->
+  <!-- ============================================== -->
+  <section id="problem" class="py-24 relative" aria-labelledby="problem-heading">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Section header -->
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 id="problem-heading" class="text-3xl sm:text-4xl font-bold">
+          MCP servers are the <span class="text-fail-red">new attack surface</span>
+        </h2>
+        <p class="mt-4 text-lg text-text-body leading-relaxed">
+          Model Context Protocol connects AI models to external tools and data. Every MCP server is a potential entry point for attackers &mdash; and right now, almost nobody is checking.
+        </p>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
+        <div class="p-6 rounded-xl bg-scanner-deep border border-scanner-border text-center">
+          <div class="text-4xl font-bold text-fail-red">30%</div>
+          <p class="mt-2 text-sm text-info-gray">of top 50 MCP servers have<br><strong class="text-text-primary">High or Critical vulnerabilities</strong></p>
+        </div>
+        <div class="p-6 rounded-xl bg-scanner-deep border border-scanner-border text-center">
+          <div class="text-4xl font-bold text-warn-yellow">296</div>
+          <p class="mt-2 text-sm text-info-gray">total findings across<br><strong class="text-text-primary">top 50 servers scanned</strong></p>
+        </div>
+        <div class="p-6 rounded-xl bg-scanner-deep border border-scanner-border text-center">
+          <div class="text-4xl font-bold text-shield-bright">30+</div>
+          <p class="mt-2 text-sm text-info-gray">MCP-related CVEs filed<br><strong class="text-text-primary">in Q1 2026 alone</strong></p>
+        </div>
+        <div class="p-6 rounded-xl bg-scanner-deep border border-scanner-border text-center">
+          <div class="text-4xl font-bold text-pass-green">0</div>
+          <p class="mt-2 text-sm text-info-gray">dedicated security tools<br><strong class="text-text-primary">existed before MCP Audit</strong></p>
+        </div>
+      </div>
+
+      <!-- Vulnerability breakdown -->
+      <div class="mt-16 p-8 rounded-xl bg-scanner-deep border border-scanner-border">
+        <h3 class="text-xl font-semibold mb-6">Most triggered rules across top 50 MCP servers</h3>
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between text-sm mb-1.5">
+              <span class="text-text-body">Missing Timeout / Response Size Limit (MCP-11)</span>
+              <span class="text-fail-red font-medium">100%</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-scanner-dark overflow-hidden">
+              <div class="h-full rounded-full bg-fail-red" style="width: 100%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1.5">
+              <span class="text-text-body">Missing Logging Configuration (MCP-09)</span>
+              <span class="text-fail-red font-medium">100%</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-scanner-dark overflow-hidden">
+              <div class="h-full rounded-full bg-fail-red" style="width: 100%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1.5">
+              <span class="text-text-body">Unpinned Dependencies / Auto-install (MCP-06)</span>
+              <span class="text-fail-red font-medium">98%</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-scanner-dark overflow-hidden">
+              <div class="h-full rounded-full bg-fail-red" style="width: 98%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1.5">
+              <span class="text-text-body">Unverified Package Source (MCP-01)</span>
+              <span class="text-warn-yellow font-medium">54%</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-scanner-dark overflow-hidden">
+              <div class="h-full rounded-full bg-warn-yellow" style="width: 54%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1.5">
+              <span class="text-text-body">Hardcoded Credentials / Secrets (MCP-04)</span>
+              <span class="text-warn-yellow font-medium">22%</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-scanner-dark overflow-hidden">
+              <div class="h-full rounded-full bg-warn-yellow" style="width: 22%"></div>
+            </div>
+          </div>
+        </div>
+        <p class="mt-6 text-sm text-info-gray">Source: MCP Audit audit of top 50 public MCP servers, April 2026 &mdash; <a href="https://github.com/Norbi0801/mcp-audit/blob/main/#results" class="text-shield-blue hover:underline">full results</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- SCAN RESULTS SECTION                            -->
+  <!-- ============================================== -->
+  <section id="results" class="py-24 bg-scanner-deep/50" aria-labelledby="results-heading">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 id="results-heading" class="text-3xl sm:text-4xl font-bold">
+          We scanned <span class="text-shield-blue">50 top MCP servers</span>
+        </h2>
+        <p class="mt-4 text-lg text-text-body leading-relaxed">
+          The 50 most popular public MCP servers on GitHub (350,000+ combined stars), scanned with all 19 rules on April 1, 2026.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
+        <div class="p-6 rounded-xl bg-scanner-dark border border-scanner-border text-center">
+          <div class="text-4xl font-bold text-fail-red">5.9</div>
+          <p class="mt-2 text-sm text-info-gray">average findings<br><strong class="text-text-primary">per server</strong></p>
+        </div>
+        <div class="p-6 rounded-xl bg-scanner-dark border border-scanner-border text-center">
+          <div class="text-4xl font-bold text-warn-yellow">22%</div>
+          <p class="mt-2 text-sm text-info-gray">of servers ship with<br><strong class="text-text-primary">hardcoded credentials</strong></p>
+        </div>
+        <div class="p-6 rounded-xl bg-scanner-dark border border-scanner-border text-center">
+          <div class="text-4xl font-bold text-shield-bright">98%</div>
+          <p class="mt-2 text-sm text-info-gray">use unpinned dependencies<br><strong class="text-text-primary">via npx -y</strong></p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- FEATURES SECTION                                -->
+  <!-- ============================================== -->
+  <section id="features" class="py-24" aria-labelledby="features-heading">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 id="features-heading" class="text-3xl sm:text-4xl font-bold">
+          Everything you need to <span class="text-shield-blue">secure MCP</span>
+        </h2>
+        <p class="mt-4 text-lg text-text-body">
+          One command. Full OWASP coverage. Multiple output formats. CI/CD ready.
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
+        <!-- Feature 1 -->
+        <div class="feature-card p-6 rounded-xl bg-scanner-deep border border-scanner-border">
+          <div class="w-10 h-10 rounded-lg bg-shield-blue/10 flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-shield-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold">OWASP MCP Top 10</h3>
+          <p class="mt-2 text-sm text-text-body leading-relaxed">Complete coverage of all 10 OWASP MCP vulnerability categories. From tool poisoning to unauthorized access.</p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card p-6 rounded-xl bg-scanner-deep border border-scanner-border">
+          <div class="w-10 h-10 rounded-lg bg-pass-green/10 flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-pass-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold">Blazing Fast</h3>
+          <p class="mt-2 text-sm text-text-body leading-relaxed">Written in Rust for maximum performance. Scans 100 servers in under 5 seconds. Zero runtime dependencies.</p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card p-6 rounded-xl bg-scanner-deep border border-scanner-border">
+          <div class="w-10 h-10 rounded-lg bg-warn-yellow/10 flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-warn-yellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold">Multiple Output Formats</h3>
+          <p class="mt-2 text-sm text-text-body leading-relaxed">Table, JSON, Markdown, and SARIF output. Integrate with GitHub Code Scanning, CI/CD pipelines, or your own tooling.</p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="feature-card p-6 rounded-xl bg-scanner-deep border border-scanner-border">
+          <div class="w-10 h-10 rounded-lg bg-fail-red/10 flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-fail-red" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold">Auto-Detection</h3>
+          <p class="mt-2 text-sm text-text-body leading-relaxed">Automatically finds <code class="text-pass-green bg-scanner-dark px-1.5 py-0.5 rounded text-xs">claude_desktop_config.json</code> and <code class="text-pass-green bg-scanner-dark px-1.5 py-0.5 rounded text-xs">.mcp.json</code> files. Zero config needed.</p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="feature-card p-6 rounded-xl bg-scanner-deep border border-scanner-border">
+          <div class="w-10 h-10 rounded-lg bg-shield-bright/10 flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-shield-bright" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold">CI/CD Integration</h3>
+          <p class="mt-2 text-sm text-text-body leading-relaxed">GitHub Actions workflow included. Fail builds on critical/high findings. Upload SARIF for GitHub Code Scanning alerts.</p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="feature-card p-6 rounded-xl bg-scanner-deep border border-scanner-border">
+          <div class="w-10 h-10 rounded-lg bg-info-gray/10 flex items-center justify-center mb-4">
+            <svg class="w-5 h-5 text-info-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold">Ecosystem Monitoring</h3>
+          <p class="mt-2 text-sm text-text-body leading-relaxed">Track CVEs, GitHub advisories, OWASP updates, and MCP adoption metrics. Weekly digest reports for staying ahead of threats.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- RULES SECTION                                   -->
+  <!-- ============================================== -->
+  <section id="rules" class="py-24" aria-labelledby="rules-heading">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 id="rules-heading" class="text-3xl sm:text-4xl font-bold">
+          10 rules. <span class="text-shield-blue">Complete OWASP coverage.</span>
+        </h2>
+        <p class="mt-4 text-lg text-text-body">
+          Every rule maps directly to the OWASP MCP Top 10. Real vulnerabilities, real detections.
+        </p>
+      </div>
+
+      <div class="mt-16 overflow-x-auto">
+        <table class="w-full text-left text-sm" role="table">
+          <thead>
+            <tr class="border-b border-scanner-border">
+              <th class="py-3 px-4 text-info-gray font-medium" scope="col">Rule</th>
+              <th class="py-3 px-4 text-info-gray font-medium" scope="col">Name</th>
+              <th class="py-3 px-4 text-info-gray font-medium" scope="col">Severity</th>
+              <th class="py-3 px-4 text-info-gray font-medium hidden sm:table-cell" scope="col">What it detects</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-scanner-border">
+            <tr class="hover:bg-scanner-deep/50 transition-colors">
+              <td class="py-3 px-4 font-mono text-shield-bright">MCP-01</td>
+              <td class="py-3 px-4 text-text-primary font-medium">Tool Poisoning</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-fail-red/10 text-fail-red">HIGH</span></td>
+              <td class="py-3 px-4 text-text-body hidden sm:table-cell">Unverified sources, typosquatting, malicious packages</td>
+            </tr>
+            <tr class="hover:bg-scanner-deep/50 transition-colors">
+              <td class="py-3 px-4 font-mono text-shield-bright">MCP-02</td>
+              <td class="py-3 px-4 text-text-primary font-medium">Excessive Permissions</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-fail-red/10 text-fail-red">HIGH</span></td>
+              <td class="py-3 px-4 text-text-body hidden sm:table-cell">Overly broad filesystem/network access</td>
+            </tr>
+            <tr class="hover:bg-scanner-deep/50 transition-colors">
+              <td class="py-3 px-4 font-mono text-shield-bright">MCP-03</td>
+              <td class="py-3 px-4 text-text-primary font-medium">Prompt Injection</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-fail-red/10 text-fail-red">HIGH</span></td>
+              <td class="py-3 px-4 text-text-body hidden sm:table-cell">Unsanitized tool inputs enabling injection</td>
+            </tr>
+            <tr class="hover:bg-scanner-deep/50 transition-colors">
+              <td class="py-3 px-4 font-mono text-shield-bright">MCP-04</td>
+              <td class="py-3 px-4 text-text-primary font-medium">Insecure Credentials</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-deep-red/10 text-deep-red">CRITICAL</span></td>
+              <td class="py-3 px-4 text-text-body hidden sm:table-cell">Hardcoded API keys, tokens, passwords</td>
+            </tr>
+            <tr class="hover:bg-scanner-deep/50 transition-colors">
+              <td class="py-3 px-4 font-mono text-shield-bright">MCP-05</td>
+              <td class="py-3 px-4 text-text-primary font-medium">Server Spoofing</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-fail-red/10 text-fail-red">HIGH</span></td>
+              <td class="py-3 px-4 text-text-body hidden sm:table-cell">Impersonation, tunnel URLs, unencrypted connections</td>
+            </tr>
+            <tr class="hover:bg-scanner-deep/50 transition-colors">
+              <td class="py-3 px-4 font-mono text-shield-bright">MCP-06</td>
+              <td class="py-3 px-4 text-text-primary font-medium">Insecure Dependencies</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-warn-yellow/10 text-warn-yellow">MEDIUM</span></td>
+              <td class="py-3 px-4 text-text-body hidden sm:table-cell">Unpinned versions, deprecated packages</td>
+            </tr>
+            <tr class="hover:bg-scanner-deep/50 transition-colors">
+              <td class="py-3 px-4 font-mono text-shield-bright">MCP-07</td>
+              <td class="py-3 px-4 text-text-primary font-medium">Command Injection</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-deep-red/10 text-deep-red">CRITICAL</span></td>
+              <td class="py-3 px-4 text-text-body hidden sm:table-cell">Shell interpreters, metacharacters in args</td>
+            </tr>
+            <tr class="hover:bg-scanner-deep/50 transition-colors">
+              <td class="py-3 px-4 font-mono text-shield-bright">MCP-08</td>
+              <td class="py-3 px-4 text-text-primary font-medium">Data Exfiltration</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-fail-red/10 text-fail-red">HIGH</span></td>
+              <td class="py-3 px-4 text-text-body hidden sm:table-cell">Sensitive file access, exposed databases</td>
+            </tr>
+            <tr class="hover:bg-scanner-deep/50 transition-colors">
+              <td class="py-3 px-4 font-mono text-shield-bright">MCP-09</td>
+              <td class="py-3 px-4 text-text-primary font-medium">Insufficient Logging</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-warn-yellow/10 text-warn-yellow">MEDIUM</span></td>
+              <td class="py-3 px-4 text-text-body hidden sm:table-cell">Missing or disabled logging/audit trails</td>
+            </tr>
+            <tr class="hover:bg-scanner-deep/50 transition-colors">
+              <td class="py-3 px-4 font-mono text-shield-bright">MCP-10</td>
+              <td class="py-3 px-4 text-text-primary font-medium">Unauthorized Access</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-xs font-semibold bg-fail-red/10 text-fail-red">HIGH</span></td>
+              <td class="py-3 px-4 text-text-body hidden sm:table-cell">Missing auth, dev mode in production</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- HOW IT WORKS                                    -->
+  <!-- ============================================== -->
+  <section class="py-24 bg-scanner-deep/50" aria-labelledby="how-heading">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 id="how-heading" class="text-3xl sm:text-4xl font-bold">
+          Three steps to <span class="text-pass-green">secure MCP</span>
+        </h2>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 mt-16">
+        <!-- Step 1 -->
+        <div class="text-center">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-shield-blue/10 border border-shield-blue/20 flex items-center justify-center mb-5">
+            <span class="text-2xl font-bold text-shield-blue">1</span>
+          </div>
+          <h3 class="text-lg font-semibold">Install</h3>
+          <div class="mt-3 inline-block px-4 py-2 rounded-lg bg-scanner-dark border border-scanner-border">
+            <code class="text-pass-green font-mono text-sm">cargo install mcp-audit</code>
+          </div>
+          <p class="mt-3 text-sm text-info-gray">Single binary. No dependencies. Works on Linux, macOS, Windows.</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="text-center">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-shield-blue/10 border border-shield-blue/20 flex items-center justify-center mb-5">
+            <span class="text-2xl font-bold text-shield-blue">2</span>
+          </div>
+          <h3 class="text-lg font-semibold">Scan</h3>
+          <div class="mt-3 inline-block px-4 py-2 rounded-lg bg-scanner-dark border border-scanner-border">
+            <code class="text-pass-green font-mono text-sm">mcp-audit scan</code>
+          </div>
+          <p class="mt-3 text-sm text-info-gray">Auto-detects config files. Runs all 19 security rules. Results in seconds.</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="text-center">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-shield-blue/10 border border-shield-blue/20 flex items-center justify-center mb-5">
+            <span class="text-2xl font-bold text-shield-blue">3</span>
+          </div>
+          <h3 class="text-lg font-semibold">Fix</h3>
+          <div class="mt-3 inline-block px-4 py-2 rounded-lg bg-scanner-dark border border-scanner-border">
+            <code class="text-pass-green font-mono text-sm">Actionable remediation steps</code>
+          </div>
+          <p class="mt-3 text-sm text-info-gray">Each finding includes severity, description, and how to fix it. No guesswork.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- BADGE GENERATOR SECTION                         -->
+  <!-- ============================================== -->
+  <section id="badge" class="py-24 bg-scanner-deep/50" aria-labelledby="badge-heading">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h2 id="badge-heading" class="text-3xl sm:text-4xl font-bold">
+          Show the world your MCP servers are <span class="text-pass-green">secure</span>
+        </h2>
+        <p class="mt-4 text-lg text-text-body">
+          Add a "Scanned by MCP Audit" badge to your README. Build trust with your users.
+        </p>
+      </div>
+
+      <div class="mt-12 max-w-2xl mx-auto">
+        <!-- Badge previews -->
+        <div class="flex flex-wrap justify-center gap-6 mb-10">
+          <div class="badge-preview cursor-pointer" onclick="selectBadge('passed')" role="button" tabindex="0" aria-label="Select passed badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="186" height="20" role="img" aria-label="MCP Audit: passed">
+              <defs><linearGradient id="bp-s" x2="0" y2="100%"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="bp-r"><rect width="186" height="20" rx="3" fill="#fff"/></clipPath></defs>
+              <g clip-path="url(#bp-r)"><rect width="106" height="20" fill="#30363D"/><rect x="106" width="80" height="20" fill="#3FB950"/><rect width="186" height="20" fill="url(#bp-s)"/></g>
+              <g fill="#fff" text-anchor="middle" font-family="Inter,Verdana,sans-serif" text-rendering="geometricPrecision" font-size="11">
+                <text aria-hidden="true" x="53" y="15" fill="#010101" fill-opacity=".3">MCP Audit</text><text x="53" y="14">MCP Audit</text>
+                <text aria-hidden="true" x="145" y="15" fill="#010101" fill-opacity=".3">passed</text><text x="145" y="14" font-weight="600">passed</text>
+              </g>
+            </svg>
+          </div>
+          <div class="badge-preview cursor-pointer" onclick="selectBadge('failed')" role="button" tabindex="0" aria-label="Select failed badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="178" height="20" role="img" aria-label="MCP Audit: failed">
+              <defs><linearGradient id="bf-s" x2="0" y2="100%"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="bf-r"><rect width="178" height="20" rx="3" fill="#fff"/></clipPath></defs>
+              <g clip-path="url(#bf-r)"><rect width="106" height="20" fill="#30363D"/><rect x="106" width="72" height="20" fill="#F85149"/><rect width="178" height="20" fill="url(#bf-s)"/></g>
+              <g fill="#fff" text-anchor="middle" font-family="Inter,Verdana,sans-serif" text-rendering="geometricPrecision" font-size="11">
+                <text aria-hidden="true" x="53" y="15" fill="#010101" fill-opacity=".3">MCP Audit</text><text x="53" y="14">MCP Audit</text>
+                <text aria-hidden="true" x="141" y="15" fill="#010101" fill-opacity=".3">failed</text><text x="141" y="14" font-weight="600">failed</text>
+              </g>
+            </svg>
+          </div>
+          <div class="badge-preview cursor-pointer" onclick="selectBadge('scanning')" role="button" tabindex="0" aria-label="Select scanning badge">
+            <svg xmlns="http://www.w3.org/2000/svg" width="194" height="20" role="img" aria-label="MCP Audit: scanning">
+              <defs><linearGradient id="bs-s" x2="0" y2="100%"><stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="bs-r"><rect width="194" height="20" rx="3" fill="#fff"/></clipPath></defs>
+              <g clip-path="url(#bs-r)"><rect width="106" height="20" fill="#30363D"/><rect x="106" width="88" height="20" fill="#D29922"/><rect width="194" height="20" fill="url(#bs-s)"/></g>
+              <g fill="#fff" text-anchor="middle" font-family="Inter,Verdana,sans-serif" text-rendering="geometricPrecision" font-size="11">
+                <text aria-hidden="true" x="53" y="15" fill="#010101" fill-opacity=".3">MCP Audit</text><text x="53" y="14">MCP Audit</text>
+                <text aria-hidden="true" x="149" y="15" fill="#010101" fill-opacity=".3">scanning</text><text x="149" y="14" font-weight="600">scanning</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Badge code -->
+        <div class="rounded-xl bg-scanner-deep border border-scanner-border overflow-hidden">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-scanner-border">
+            <span class="text-sm text-info-gray font-mono">Markdown</span>
+            <button type="button" id="copy-badge-btn" onclick="copyBadgeCode()"
+                    class="text-xs text-info-gray hover:text-text-primary transition-colors px-2 py-1 rounded border border-scanner-border hover:border-info-gray">
+              Copy
+            </button>
+          </div>
+          <div class="p-4">
+            <code id="badge-code" class="text-sm font-mono text-pass-green break-all">[![MCP Audit](https://img.shields.io/badge/MCP_Scanner-passed-3FB950?style=flat-square)](https://github.com/Norbi0801/mcp-audit)</code>
+          </div>
+        </div>
+        <p class="mt-4 text-sm text-info-gray text-center">Click a badge above to get the corresponding embed code</p>
+
+        <!-- Badge CTA -->
+        <div class="mt-10 text-center">
+          <a href="https://github.com/Norbi0801/mcp-audit" target="_blank" rel="noopener noreferrer"
+             class="inline-flex items-center px-6 py-3 text-base font-semibold rounded-lg bg-pass-green/10 hover:bg-pass-green/20 border border-pass-green/30 text-pass-green transition-colors">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            Scan your MCP servers now
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- FAQ SECTION                                     -->
+  <!-- ============================================== -->
+  <section class="py-24 bg-scanner-deep/50" aria-labelledby="faq-heading">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 id="faq-heading" class="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+
+      <div class="space-y-4">
+        <details class="group rounded-xl bg-scanner-deep border border-scanner-border">
+          <summary class="flex items-center justify-between p-5 cursor-pointer text-text-primary font-medium hover:text-shield-bright transition-colors">
+            What is MCP and why does it need security scanning?
+            <svg class="w-5 h-5 text-info-gray group-open:rotate-180 transition-transform shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-text-body leading-relaxed">
+            Model Context Protocol (MCP) is a standard for connecting AI models (like Claude, GPT) to external tools and data sources. Each MCP server is essentially an API that an AI model can call &mdash; making it a potential attack surface. Misconfigured servers can expose filesystems, leak credentials, or allow command injection. MCP Audit audits these configurations against the OWASP MCP Top 10 security standard.
+          </div>
+        </details>
+
+        <details class="group rounded-xl bg-scanner-deep border border-scanner-border">
+          <summary class="flex items-center justify-between p-5 cursor-pointer text-text-primary font-medium hover:text-shield-bright transition-colors">
+            Is MCP Audit free?
+            <svg class="w-5 h-5 text-info-gray group-open:rotate-180 transition-transform shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-text-body leading-relaxed">
+            Yes. The CLI is free and open source under AGPL-3.0, forever. You get all 19 security rules, multiple output formats, and CI/CD integration at no cost. 
+          </div>
+        </details>
+
+        <details class="group rounded-xl bg-scanner-deep border border-scanner-border">
+          <summary class="flex items-center justify-between p-5 cursor-pointer text-text-primary font-medium hover:text-shield-bright transition-colors">
+            What MCP configurations does it scan?
+            <svg class="w-5 h-5 text-info-gray group-open:rotate-180 transition-transform shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-text-body leading-relaxed">
+            MCP Audit automatically detects and scans <code class="text-pass-green bg-scanner-dark px-1 py-0.5 rounded text-xs">claude_desktop_config.json</code> (Claude Desktop), <code class="text-pass-green bg-scanner-dark px-1 py-0.5 rounded text-xs">.mcp.json</code> (standard MCP config), and any custom config file you point it at. It works with both stdio-based and HTTP-based MCP servers.
+          </div>
+        </details>
+
+        <details class="group rounded-xl bg-scanner-deep border border-scanner-border">
+          <summary class="flex items-center justify-between p-5 cursor-pointer text-text-primary font-medium hover:text-shield-bright transition-colors">
+            Can I use it in CI/CD?
+            <svg class="w-5 h-5 text-info-gray group-open:rotate-180 transition-transform shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-text-body leading-relaxed">
+            Absolutely. MCP Audit ships with a GitHub Action, produces SARIF output for GitHub Code Scanning, and uses exit codes (0 = clean, 1 = critical/high findings, 2 = medium/low findings) for pipeline integration. Add it to any CI/CD system that runs CLI tools.
+          </div>
+        </details>
+
+        <details class="group rounded-xl bg-scanner-deep border border-scanner-border">
+          <summary class="flex items-center justify-between p-5 cursor-pointer text-text-primary font-medium hover:text-shield-bright transition-colors">
+            How is this different from a general SAST tool?
+            <svg class="w-5 h-5 text-info-gray group-open:rotate-180 transition-transform shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-text-body leading-relaxed">
+            General SAST tools scan source code for bugs. MCP Audit is purpose-built for MCP server <em>configurations</em> &mdash; it understands the MCP protocol, knows the specific attack vectors (tool poisoning, server spoofing, credential leakage), and aligns with the OWASP MCP Top 10 standard. Think of it as "npm audit" specifically for MCP: the right tool for a specific, growing problem.
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- FOOTER                                          -->
+  <!-- ============================================== -->
+  <footer class="py-12 border-t border-scanner-border" role="contentinfo">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Brand -->
+        <div class="lg:col-span-2">
+          <a href="#" class="flex items-center gap-3" aria-label="MCP Audit Home">
+            <img src="assets/favicon.svg" alt="" width="28" height="28">
+            <span class="text-lg font-bold text-text-primary">MCP Audit</span>
+          </a>
+          <p class="mt-3 text-sm text-info-gray max-w-sm leading-relaxed">
+            Open-source security scanner for MCP servers. Detect OWASP MCP Top 10 vulnerabilities before attackers do.
+          </p>
+
+
+          <p class="mt-4 text-xs text-text-muted">&copy; 2026 MCP Audit. AGPL-3.0 License.</p>
+        </div>
+
+        <!-- Product -->
+        <div>
+          <h3 class="text-sm font-semibold text-text-primary mb-3">Product</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#features" class="text-info-gray hover:text-text-primary transition-colors">Features</a></li>
+            <li><a href="#rules" class="text-info-gray hover:text-text-primary transition-colors">Security Rules</a></li>
+            <li><a href="#badge" class="text-info-gray hover:text-text-primary transition-colors">Badge</a></li>
+            <li><a href="https://github.com/Norbi0801/mcp-audit" target="_blank" rel="noopener noreferrer" class="text-info-gray hover:text-text-primary transition-colors">Documentation</a></li>
+          </ul>
+        </div>
+
+        <!-- Community -->
+        <div>
+          <h3 class="text-sm font-semibold text-text-primary mb-3">Community</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="https://github.com/Norbi0801/mcp-audit" target="_blank" rel="noopener noreferrer" class="text-info-gray hover:text-text-primary transition-colors">GitHub</a></li>
+            <li><a href="https://github.com/Norbi0801/mcp-audit/issues" target="_blank" rel="noopener noreferrer" class="text-info-gray hover:text-text-primary transition-colors">Report an Issue</a></li>
+            <li><a href="https://github.com/Norbi0801/mcp-audit/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer" class="text-info-gray hover:text-text-primary transition-colors">Contributing</a></li>
+            <li><a href="https://github.com/Norbi0801/mcp-audit/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" class="text-info-gray hover:text-text-primary transition-colors">License (AGPL-3.0)</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================== -->
+  <!-- JAVASCRIPT                                      -->
+  <!-- ============================================== -->
+  <script>
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileNav = document.getElementById('mobile-nav');
+    let menuOpen = false;
+
+    mobileMenuBtn.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenuBtn.setAttribute('aria-expanded', menuOpen);
+      if (menuOpen) {
+        mobileNav.style.maxHeight = mobileNav.scrollHeight + 'px';
+        mobileNav.style.opacity = '1';
+      } else {
+        mobileNav.style.maxHeight = '0';
+        mobileNav.style.opacity = '0';
+      }
+    });
+
+    // Close mobile nav on link click
+    mobileNav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        menuOpen = false;
+        mobileMenuBtn.setAttribute('aria-expanded', false);
+        mobileNav.style.maxHeight = '0';
+        mobileNav.style.opacity = '0';
+      });
+    });
+
+    // Billing toggle (monthly/yearly)
+    let isYearly = false;
+
+    function toggleBilling() {
+      isYearly = !isYearly;
+      const toggle = document.getElementById('billing-toggle');
+      const knob = document.getElementById('billing-knob');
+      const monthlyLabel = document.getElementById('monthly-label');
+      const yearlyLabel = document.getElementById('yearly-label');
+
+      toggle.setAttribute('aria-checked', isYearly);
+
+      if (isYearly) {
+        knob.classList.remove('translate-x-1');
+        knob.classList.add('translate-x-6');
+        toggle.classList.remove('bg-scanner-border');
+        toggle.classList.add('bg-shield-blue');
+        monthlyLabel.classList.remove('text-text-primary');
+        monthlyLabel.classList.add('text-info-gray');
+        yearlyLabel.classList.remove('text-info-gray');
+        yearlyLabel.classList.add('text-text-primary');
+      } else {
+        knob.classList.remove('translate-x-6');
+        knob.classList.add('translate-x-1');
+        toggle.classList.remove('bg-shield-blue');
+        toggle.classList.add('bg-scanner-border');
+        monthlyLabel.classList.remove('text-info-gray');
+        monthlyLabel.classList.add('text-text-primary');
+        yearlyLabel.classList.remove('text-text-primary');
+        yearlyLabel.classList.add('text-info-gray');
+      }
+
+      document.querySelectorAll('.price-monthly').forEach(el => el.classList.toggle('hidden', isYearly));
+      document.querySelectorAll('.price-yearly').forEach(el => el.classList.toggle('hidden', !isYearly));
+    }
+
+    // Badge generator
+    const badgeCodes = {
+      passed: '[![MCP Audit](https://img.shields.io/badge/MCP_Scanner-passed-3FB950?style=flat-square)](https://github.com/Norbi0801/mcp-audit)',
+      failed: '[![MCP Audit](https://img.shields.io/badge/MCP_Scanner-failed-F85149?style=flat-square)](https://github.com/Norbi0801/mcp-audit)',
+      scanning: '[![MCP Audit](https://img.shields.io/badge/MCP_Scanner-scanning-D29922?style=flat-square)](https://github.com/Norbi0801/mcp-audit)',
+    };
+
+    function selectBadge(status) {
+      document.getElementById('badge-code').textContent = badgeCodes[status];
+    }
+
+    function copyBadgeCode() {
+      const code = document.getElementById('badge-code').textContent;
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('copy-badge-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+      });
+    }
+
+    
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ email: email, _source: source })
+      });
+      if (!response.ok) throw new Error('Submission failed');
+      return response.json();
+    }
+
+      event.preventDefault();
+      if (!email) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+        .then(() => {
+        })
+        .catch(() => {
+          btn.disabled = false;
+        });
+    }
+
+    // Hero inline email form handler
+      event.preventDefault();
+      if (!email) return;
+
+        .then(() => {
+        })
+        .catch(() => {
+          alert('Something went wrong. Please try the form at the bottom of the page.');
+        });
+    }
+
+    // Footer email form handler
+      event.preventDefault();
+      if (!email) return;
+
+        .then(() => {
+        })
+        .catch(() => {
+          alert('Something went wrong. Please try again.');
+        });
+    }
+
+    // Smooth scroll for anchor links (fallback for older browsers)
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+
+    // Intersection Observer for scroll animations
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-fade-in-up');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.feature-card').forEach(el => {
+        observer.observe(el);
+      });
+    }
+  </script>
+</body>
+</html>

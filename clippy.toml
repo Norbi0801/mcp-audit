@@ -1,0 +1,11 @@
+# Clippy configuration for MCP Audit
+# See: https://doc.rust-lang.org/clippy/lint_configuration.html
+
+# Allow slightly longer functions in a security scanner (rule logic can be verbose)
+too-many-lines-threshold = 150
+
+# Cognitive complexity threshold
+cognitive-complexity-threshold = 30
+
+# Allow up to 7 function arguments (scan functions often carry context)
+too-many-arguments-threshold = 7

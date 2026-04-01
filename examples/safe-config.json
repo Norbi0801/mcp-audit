@@ -1,0 +1,55 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-filesystem@1.2.0",
+        "/home/user/projects/my-app",
+        "--read-only"
+      ],
+      "env": {
+        "LOG_LEVEL": "info",
+        "REQUEST_TIMEOUT": "30000",
+        "MAX_RESPONSE_SIZE": "10485760"
+      }
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-github@1.0.0"
+      ],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "LOG_LEVEL": "warn",
+        "REQUEST_TIMEOUT": "30000",
+        "MAX_RESPONSE_SIZE": "10485760"
+      }
+    },
+    "postgres": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-postgres@1.0.0",
+        "--read-only"
+      ],
+      "env": {
+        "DATABASE_URL": "${DATABASE_URL}",
+        "LOG_LEVEL": "info",
+        "NODE_ENV": "production",
+        "REQUEST_TIMEOUT": "30000",
+        "MAX_RESPONSE_SIZE": "10485760"
+      }
+    },
+    "brave-search": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/server-brave-search@1.0.0"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "${BRAVE_API_KEY}",
+        "LOG_LEVEL": "info",
+        "REQUEST_TIMEOUT": "30000",
+        "MAX_RESPONSE_SIZE": "10485760"
+      }
+    }
+  }
+}

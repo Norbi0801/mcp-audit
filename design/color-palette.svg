@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <!-- Color Palette Visual Reference — MCP Scanner -->
+
+  <!-- Background -->
+  <rect width="800" height="600" fill="#0D1117"/>
+
+  <!-- Title -->
+  <text x="40" y="45" font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="700" fill="#F0F6FC">MCP Scanner — Color Palette</text>
+  <text x="40" y="70" font-family="Inter, system-ui, sans-serif" font-size="14" fill="#8B949E">Official brand colors</text>
+
+  <!-- === PRIMARY COLORS === -->
+  <text x="40" y="115" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#58A6FF">Primary</text>
+
+  <!-- Scanner Dark -->
+  <rect x="40" y="130" width="160" height="80" rx="8" fill="#0D1117" stroke="#30363D" stroke-width="1"/>
+  <text x="50" y="190" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#F0F6FC">Scanner Dark</text>
+  <text x="50" y="205" font-family="'JetBrains Mono', monospace" font-size="10" fill="#8B949E">#0D1117</text>
+
+  <!-- Scanner Deep -->
+  <rect x="220" y="130" width="160" height="80" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+  <text x="230" y="190" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#F0F6FC">Scanner Deep</text>
+  <text x="230" y="205" font-family="'JetBrains Mono', monospace" font-size="10" fill="#8B949E">#161B22</text>
+
+  <!-- Shield Blue -->
+  <rect x="400" y="130" width="160" height="80" rx="8" fill="#2F81F7"/>
+  <text x="410" y="190" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#FFFFFF">Shield Blue</text>
+  <text x="410" y="205" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.8)">#2F81F7</text>
+
+  <!-- Shield Bright -->
+  <rect x="580" y="130" width="160" height="80" rx="8" fill="#58A6FF"/>
+  <text x="590" y="190" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#FFFFFF">Shield Bright</text>
+  <text x="590" y="205" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.8)">#58A6FF</text>
+
+  <!-- === STATUS COLORS === -->
+  <text x="40" y="260" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#58A6FF">Status / Semantic</text>
+
+  <!-- Pass Green -->
+  <rect x="40" y="275" width="160" height="80" rx="8" fill="#3FB950"/>
+  <text x="50" y="335" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#FFFFFF">Pass Green</text>
+  <text x="50" y="350" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.8)">#3FB950</text>
+
+  <!-- Warn Yellow -->
+  <rect x="220" y="275" width="160" height="80" rx="8" fill="#D29922"/>
+  <text x="230" y="335" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#FFFFFF">Warn Yellow</text>
+  <text x="230" y="350" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.8)">#D29922</text>
+
+  <!-- Fail Red -->
+  <rect x="400" y="275" width="160" height="80" rx="8" fill="#F85149"/>
+  <text x="410" y="335" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#FFFFFF">Fail Red</text>
+  <text x="410" y="350" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.8)">#F85149</text>
+
+  <!-- Info Gray -->
+  <rect x="580" y="275" width="160" height="80" rx="8" fill="#8B949E"/>
+  <text x="590" y="335" font-family="Inter, sans-serif" font-size="11" font-weight="600" fill="#FFFFFF">Info Gray</text>
+  <text x="590" y="350" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.8)">#8B949E</text>
+
+  <!-- === SEVERITY COLORS === -->
+  <text x="40" y="405" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#58A6FF">Severity Scale</text>
+
+  <!-- Critical -->
+  <rect x="40" y="420" width="130" height="60" rx="8" fill="#DA3633"/>
+  <text x="50" y="455" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">CRITICAL</text>
+  <text x="50" y="472" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.8)">#DA3633</text>
+
+  <!-- High -->
+  <rect x="190" y="420" width="130" height="60" rx="8" fill="#F85149"/>
+  <text x="200" y="455" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">HIGH</text>
+  <text x="200" y="472" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.8)">#F85149</text>
+
+  <!-- Medium -->
+  <rect x="340" y="420" width="130" height="60" rx="8" fill="#D29922"/>
+  <text x="350" y="455" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">MEDIUM</text>
+  <text x="350" y="472" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.8)">#D29922</text>
+
+  <!-- Low -->
+  <rect x="490" y="420" width="130" height="60" rx="8" fill="#58A6FF"/>
+  <text x="500" y="455" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#FFFFFF">LOW</text>
+  <text x="500" y="472" font-family="'JetBrains Mono', monospace" font-size="10" fill="rgba(255,255,255,0.8)">#58A6FF</text>
+
+  <!-- Info -->
+  <rect x="640" y="420" width="130" height="60" rx="8" fill="#484F58"/>
+  <text x="650" y="455" font-family="Inter, sans-serif" font-size="12" font-weight="700" fill="#8B949E">INFO</text>
+  <text x="650" y="472" font-family="'JetBrains Mono', monospace" font-size="10" fill="#8B949E">#484F58</text>
+
+  <!-- === TEXT & SURFACE === -->
+  <text x="40" y="530" font-family="Inter, sans-serif" font-size="16" font-weight="600" fill="#58A6FF">Text &amp; Surface</text>
+
+  <rect x="40" y="545" width="100" height="40" rx="6" fill="#F0F6FC"/>
+  <text x="50" y="570" font-family="'JetBrains Mono', monospace" font-size="9" fill="#0D1117">#F0F6FC</text>
+
+  <rect x="155" y="545" width="100" height="40" rx="6" fill="#C9D1D9"/>
+  <text x="165" y="570" font-family="'JetBrains Mono', monospace" font-size="9" fill="#0D1117">#C9D1D9</text>
+
+  <rect x="270" y="545" width="100" height="40" rx="6" fill="#8B949E"/>
+  <text x="280" y="570" font-family="'JetBrains Mono', monospace" font-size="9" fill="#FFFFFF">#8B949E</text>
+
+  <rect x="385" y="545" width="100" height="40" rx="6" fill="#484F58"/>
+  <text x="395" y="570" font-family="'JetBrains Mono', monospace" font-size="9" fill="#8B949E">#484F58</text>
+
+  <rect x="500" y="545" width="100" height="40" rx="6" fill="#30363D"/>
+  <text x="510" y="570" font-family="'JetBrains Mono', monospace" font-size="9" fill="#8B949E">#30363D</text>
+
+  <rect x="615" y="545" width="100" height="40" rx="6" fill="#21262D"/>
+  <text x="625" y="570" font-family="'JetBrains Mono', monospace" font-size="9" fill="#8B949E">#21262D</text>
+</svg>

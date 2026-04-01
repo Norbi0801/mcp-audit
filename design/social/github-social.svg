@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0D1117;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0D1117;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#161B22;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#58A6FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2F81F7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="scanGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3FB950;stop-opacity:0" />
+      <stop offset="50%" style="stop-color:#3FB950;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3FB950;stop-opacity:0" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="40%">
+      <stop offset="0%" style="stop-color:#2F81F7;stop-opacity:0.12" />
+      <stop offset="100%" style="stop-color:#2F81F7;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="url(#bgGrad)"/>
+
+  <!-- Background glow -->
+  <rect width="1280" height="640" fill="url(#glow)"/>
+
+  <!-- Subtle border -->
+  <rect x="1" y="1" width="1278" height="638" rx="0" fill="none" stroke="#30363D" stroke-width="1"/>
+
+  <!-- Grid dots (subtle tech feel) -->
+  <g fill="#30363D" opacity="0.4">
+    <circle cx="80" cy="80" r="1"/><circle cx="160" cy="80" r="1"/><circle cx="240" cy="80" r="1"/>
+    <circle cx="80" cy="160" r="1"/><circle cx="160" cy="160" r="1"/><circle cx="240" cy="160" r="1"/>
+    <circle cx="1040" cy="480" r="1"/><circle cx="1120" cy="480" r="1"/><circle cx="1200" cy="480" r="1"/>
+    <circle cx="1040" cy="560" r="1"/><circle cx="1120" cy="560" r="1"/><circle cx="1200" cy="560" r="1"/>
+  </g>
+
+  <!-- Shield icon (centered, above text) -->
+  <g transform="translate(544, 60) scale(1.5)">
+    <path d="M64 8 L112 28 L112 56 C112 84 92 108 64 120 C36 108 16 84 16 56 L16 28 Z"
+          fill="none" stroke="url(#shieldGrad)" stroke-width="3.5" stroke-linejoin="round"/>
+    <path d="M64 14 L106 32 L106 56 C106 80 88 102 64 114 C40 102 22 80 22 56 L22 32 Z"
+          fill="#2F81F7" fill-opacity="0.06"/>
+    <line x1="36" y1="44" x2="92" y2="44" stroke="url(#scanGrad)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+    <line x1="32" y1="56" x2="96" y2="56" stroke="url(#scanGrad)" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+    <line x1="36" y1="68" x2="92" y2="68" stroke="url(#scanGrad)" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+    <line x1="42" y1="80" x2="86" y2="80" stroke="url(#scanGrad)" stroke-width="1" stroke-linecap="round" opacity="0.4"/>
+    <circle cx="64" cy="56" r="12" fill="none" stroke="#3FB950" stroke-width="1.5" opacity="0.7"/>
+    <circle cx="64" cy="56" r="4" fill="#3FB950" opacity="0.9"/>
+    <line x1="64" y1="40" x2="64" y2="48" stroke="#3FB950" stroke-width="1.2" opacity="0.6"/>
+    <line x1="64" y1="64" x2="64" y2="72" stroke="#3FB950" stroke-width="1.2" opacity="0.6"/>
+    <line x1="48" y1="56" x2="56" y2="56" stroke="#3FB950" stroke-width="1.2" opacity="0.6"/>
+    <line x1="72" y1="56" x2="80" y2="56" stroke="#3FB950" stroke-width="1.2" opacity="0.6"/>
+  </g>
+
+  <!-- Title -->
+  <text x="640" y="320" text-anchor="middle"
+        font-family="Inter, system-ui, -apple-system, sans-serif"
+        font-size="64" font-weight="700" fill="#F0F6FC" letter-spacing="-1">
+    MCP Scanner
+  </text>
+
+  <!-- Tagline -->
+  <text x="640" y="370" text-anchor="middle"
+        font-family="Inter, system-ui, -apple-system, sans-serif"
+        font-size="26" font-weight="400" fill="#8B949E">
+    "npm audit" for MCP servers
+  </text>
+
+  <!-- Divider -->
+  <rect x="590" y="395" width="100" height="2" rx="1" fill="#2F81F7" opacity="0.6"/>
+
+  <!-- Stats row -->
+  <g text-anchor="middle" font-family="Inter, system-ui, -apple-system, sans-serif">
+    <text x="380" y="450" font-size="32" font-weight="700" fill="#F0F6FC">10</text>
+    <text x="380" y="475" font-size="14" fill="#8B949E">OWASP Rules</text>
+
+    <rect x="490" y="430" width="1" height="50" fill="#30363D"/>
+
+    <text x="640" y="450" font-size="32" font-weight="700" fill="#F85149">33%</text>
+    <text x="640" y="475" font-size="14" fill="#8B949E">Servers Vulnerable</text>
+
+    <rect x="790" y="430" width="1" height="50" fill="#30363D"/>
+
+    <text x="900" y="450" font-size="32" font-weight="700" fill="#3FB950">AGPL-3.0</text>
+    <text x="900" y="475" font-size="14" fill="#8B949E">Open Source</text>
+  </g>
+
+  <!-- Install command -->
+  <g transform="translate(440, 510)">
+    <rect width="400" height="40" rx="8" fill="#161B22" stroke="#30363D" stroke-width="1"/>
+    <text x="16" y="27" font-family="'JetBrains Mono', 'Fira Code', monospace"
+          font-size="16" fill="#8B949E">$</text>
+    <text x="36" y="27" font-family="'JetBrains Mono', 'Fira Code', monospace"
+          font-size="16" fill="#3FB950">cargo install mcp-scanner</text>
+  </g>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="636" width="1280" height="4" fill="#2F81F7" opacity="0.4"/>
+</svg>

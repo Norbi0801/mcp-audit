@@ -1,0 +1,69 @@
+[workspace]
+members = ["."]
+
+[package]
+name = "mcp-audit"
+version = "0.1.0"
+edition = "2021"
+description = "MCP Security Scanner - npm audit for MCP servers."
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/Norbi0801/mcp-audit"
+homepage = "https://github.com/Norbi0801/mcp-audit"
+documentation = "https://github.com/Norbi0801/mcp-audit/blob/main/docs/rules-reference.md"
+readme = "README.md"
+keywords = ["mcp", "security", "scanner", "audit"]
+categories = ["command-line-utilities", "development-tools"]
+authors = ["Norbi0801"]
+exclude = [
+    "research/",
+    "business/",
+    "marketing/",
+    "design/",
+    "scripts/",
+    "legal/",
+    "site/",
+    "saas/",
+    ".idea/",
+    ".github/",
+    ".env.example",
+    "CLAUDE.md",
+    "Dockerfile",
+    "action.yml",
+    "clippy.toml",
+    "rustfmt.toml",
+]
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+clap = { version = "4", features = ["derive", "env"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+thiserror = "2"
+anyhow = "1"
+chrono = { version = "0.4", features = ["serde"] }
+comfy-table = "7"
+colored = "3"
+governor = "0.8"
+dotenvy = "0.15"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+url = "2"
+uuid = { version = "1", features = ["v4", "serde"] }
+futures = "0.3"
+regex = "1"
+
+# Progress indicators and terminal detection
+indicatif = "0.17"
+atty = "0.2"
+
+# Billing / webhook signature verification
+hmac = "0.12"
+sha2 = "0.10"
+hex = "0.4"
+
+[dev-dependencies]
+tokio-test = "0.4"
+wiremock = "0.6"
+tempfile = "3"

@@ -1,0 +1,476 @@
+name: 'MCP Security Scanner'
+description: 'Scan MCP server configurations for OWASP MCP Top 10 vulnerabilities. npm audit for MCP servers.'
+author: 'Norbi0801'
+
+branding:
+  icon: 'shield'
+  color: 'red'
+
+inputs:
+  config:
+    description: 'Path to MCP configuration file. Auto-detects claude_desktop_config.json, mcp.json, .mcp.json if omitted.'
+    required: false
+    default: ''
+  severity:
+    description: 'Minimum severity level to report: critical, high, medium, low, info'
+    required: false
+    default: 'low'
+  format:
+    description: 'Output format for console: table, json, sarif, markdown'
+    required: false
+    default: 'table'
+  sarif-upload:
+    description: 'Upload SARIF results to GitHub Code Scanning (requires security-events: write permission)'
+    required: false
+    default: 'true'
+  comment:
+    description: 'Post scan results as a PR comment (only effective on pull_request events)'
+    required: false
+    default: 'true'
+  fail-on:
+    description: 'Fail the workflow if findings at or above this severity exist. Set to "none" to never fail.'
+    required: false
+    default: 'high'
+  version:
+    description: 'mcp-audit version to install (e.g. "0.1.0"). Defaults to latest release.'
+    required: false
+    default: 'latest'
+  github-token:
+    description: 'GitHub token for PR comments and SARIF upload. Defaults to the automatic GITHUB_TOKEN.'
+    required: false
+    default: '${{ github.token }}'
+
+outputs:
+  findings-count:
+    description: 'Total number of security findings'
+    value: ${{ steps.analyze.outputs.findings_count }}
+  error-count:
+    description: 'Number of critical/high findings (SARIF error level)'
+    value: ${{ steps.analyze.outputs.error_count }}
+  warning-count:
+    description: 'Number of medium findings (SARIF warning level)'
+    value: ${{ steps.analyze.outputs.warning_count }}
+  note-count:
+    description: 'Number of low/info findings (SARIF note level)'
+    value: ${{ steps.analyze.outputs.note_count }}
+  exit-code:
+    description: 'Scanner exit code: 0 = clean, 1 = critical/high found, 2 = medium/low only'
+    value: ${{ steps.scan.outputs.exit_code }}
+  sarif-file:
+    description: 'Path to the generated SARIF results file'
+    value: ${{ steps.scan.outputs.sarif_file }}
+  report-file:
+    description: 'Path to the generated Markdown report file'
+    value: ${{ steps.scan.outputs.report_file }}
+  badge-status:
+    description: 'Badge label: "passing", "warning", or "failing"'
+    value: ${{ steps.analyze.outputs.badge_status }}
+  badge-color:
+    description: 'Badge color for shields.io: "brightgreen", "yellow", or "red"'
+    value: ${{ steps.analyze.outputs.badge_color }}
+
+runs:
+  using: 'composite'
+  steps:
+    # ── Step 1: Install mcp-audit binary ──────────────────────────────
+    - name: Install mcp-audit
+      id: install
+      shell: bash
+      env:
+        INPUT_VERSION: ${{ inputs.version }}
+        GH_TOKEN: ${{ inputs.github-token }}
+      run: |
+        set -euo pipefail
+
+        REPO="Norbi0801/mcp-audit"
+        INSTALL_DIR="${RUNNER_TOOL_CACHE:-/tmp}/mcp-audit-bin"
+        mkdir -p "$INSTALL_DIR"
+
+        # ── Detect platform ──
+        OS="$(uname -s | tr '[:upper:]' '[:lower:]')"
+        ARCH="$(uname -m)"
+
+        case "$OS" in
+          linux)                    PLATFORM="linux" ;;
+          darwin)                   PLATFORM="macos" ;;
+          mingw*|msys*|cygwin*)     PLATFORM="windows" ;;
+          *)
+            echo "::error::Unsupported operating system: $OS"
+            exit 1
+            ;;
+        esac
+
+        case "$ARCH" in
+          x86_64|amd64)   ARCH_SUFFIX="amd64" ;;
+          aarch64|arm64)  ARCH_SUFFIX="arm64" ;;
+          *)
+            echo "::error::Unsupported architecture: $ARCH"
+            exit 1
+            ;;
+        esac
+
+        EXT=""
+        if [ "$PLATFORM" = "windows" ]; then
+          EXT=".exe"
+        fi
+
+        BINARY_NAME="mcp-audit-${PLATFORM}-${ARCH_SUFFIX}${EXT}"
+        TARGET_PATH="${INSTALL_DIR}/mcp-audit${EXT}"
+
+        echo "::group::Installing mcp-audit ($PLATFORM/$ARCH_SUFFIX)"
+
+        # ── Try downloading pre-built binary from GitHub Releases ──
+        DOWNLOADED=false
+
+        if [ "$INPUT_VERSION" = "latest" ]; then
+          DOWNLOAD_URL="https://github.com/${REPO}/releases/latest/download/${BINARY_NAME}"
+        else
+          DOWNLOAD_URL="https://github.com/${REPO}/releases/download/v${INPUT_VERSION}/${BINARY_NAME}"
+        fi
+
+        echo "Attempting download: ${DOWNLOAD_URL}"
+        HTTP_CODE=$(curl -sL -w "%{http_code}" -o "$TARGET_PATH" "$DOWNLOAD_URL" 2>/dev/null || echo "000")
+
+        if [ "$HTTP_CODE" = "200" ] && [ -f "$TARGET_PATH" ] && [ -s "$TARGET_PATH" ]; then
+          chmod +x "$TARGET_PATH"
+          DOWNLOADED=true
+          echo "Downloaded pre-built binary (HTTP 200)"
+        else
+          echo "::notice::Pre-built binary not available (HTTP ${HTTP_CODE}). Falling back to cargo install."
+          rm -f "$TARGET_PATH"
+        fi
+
+        # ── Fall back to cargo install ──
+        if [ "$DOWNLOADED" = "false" ]; then
+          if ! command -v cargo &>/dev/null; then
+            echo "::error::cargo not found and pre-built binary unavailable. Add dtolnay/rust-toolchain@stable before this action."
+            exit 1
+          fi
+
+          CARGO_ROOT="${INSTALL_DIR}/cargo"
+          if [ "$INPUT_VERSION" = "latest" ]; then
+            cargo install mcp-audit --root "$CARGO_ROOT" 2>&1
+          else
+            cargo install "mcp-audit@${INPUT_VERSION}" --root "$CARGO_ROOT" 2>&1
+          fi
+          TARGET_PATH="${CARGO_ROOT}/bin/mcp-audit${EXT}"
+        fi
+
+        # ── Verify ──
+        if [ ! -x "$TARGET_PATH" ]; then
+          echo "::error::mcp-audit binary not found at ${TARGET_PATH}"
+          exit 1
+        fi
+
+        echo "$(dirname "$TARGET_PATH")" >> "$GITHUB_PATH"
+        "$TARGET_PATH" --version 2>/dev/null || true
+        echo "::endgroup::"
+
+    # ── Step 2: Run the scan ────────────────────────────────────────────
+    - name: Run MCP security scan
+      id: scan
+      shell: bash
+      env:
+        INPUT_CONFIG: ${{ inputs.config }}
+        INPUT_SEVERITY: ${{ inputs.severity }}
+        INPUT_FORMAT: ${{ inputs.format }}
+      run: |
+        set -uo pipefail
+
+        RESULTS_DIR="${RUNNER_TEMP:-/tmp}/mcp-audit-results"
+        mkdir -p "$RESULTS_DIR"
+
+        SARIF_FILE="${RESULTS_DIR}/results.sarif"
+        REPORT_FILE="${RESULTS_DIR}/report.md"
+
+        # Build common scan arguments
+        SCAN_ARGS=()
+        if [ -n "$INPUT_CONFIG" ]; then
+          SCAN_ARGS+=(--source "$INPUT_CONFIG")
+        fi
+        if [ -n "$INPUT_SEVERITY" ] && [ "$INPUT_SEVERITY" != "low" ]; then
+          SCAN_ARGS+=(--severity "$INPUT_SEVERITY")
+        fi
+
+        echo "::group::MCP Security Scan"
+
+        # Run 1: SARIF output (always generated — used for Code Scanning + analysis)
+        SCAN_EXIT=0
+        mcp-audit scan "${SCAN_ARGS[@]}" --format sarif -o "$SARIF_FILE" 2>&1 || SCAN_EXIT=$?
+        echo "Scanner exit code: $SCAN_EXIT"
+
+        # Run 2: Markdown report (for PR comments)
+        mcp-audit scan "${SCAN_ARGS[@]}" --format markdown -o "$REPORT_FILE" 2>&1 || true
+
+        # Run 3: Console output in the user-requested format
+        echo ""
+        echo "========================================"
+        mcp-audit scan "${SCAN_ARGS[@]}" --format "$INPUT_FORMAT" 2>&1 || true
+        echo "========================================"
+
+        echo "::endgroup::"
+
+        # Set outputs
+        {
+          echo "exit_code=${SCAN_EXIT}"
+          echo "sarif_file=${SARIF_FILE}"
+          echo "report_file=${REPORT_FILE}"
+        } >> "$GITHUB_OUTPUT"
+
+    # ── Step 3: Analyze results ─────────────────────────────────────────
+    - name: Analyze scan results
+      id: analyze
+      shell: bash
+      env:
+        SARIF_FILE: ${{ steps.scan.outputs.sarif_file }}
+        SCAN_EXIT: ${{ steps.scan.outputs.exit_code }}
+      run: |
+        set -uo pipefail
+
+        TOTAL=0
+        ERROR_COUNT=0
+        WARNING_COUNT=0
+        NOTE_COUNT=0
+
+        if [ -f "$SARIF_FILE" ] && command -v jq &>/dev/null; then
+          TOTAL=$(jq '[ .runs[0].results // [] ] | flatten | length' "$SARIF_FILE" 2>/dev/null || echo "0")
+          ERROR_COUNT=$(jq '[ .runs[0].results // [] ] | flatten | map(select(.level == "error")) | length' "$SARIF_FILE" 2>/dev/null || echo "0")
+          WARNING_COUNT=$(jq '[ .runs[0].results // [] ] | flatten | map(select(.level == "warning")) | length' "$SARIF_FILE" 2>/dev/null || echo "0")
+          NOTE_COUNT=$(jq '[ .runs[0].results // [] ] | flatten | map(select(.level == "note")) | length' "$SARIF_FILE" 2>/dev/null || echo "0")
+        elif [ -f "$SARIF_FILE" ]; then
+          # Fallback without jq: grep-based counting
+          TOTAL=$(grep -c '"level"' "$SARIF_FILE" 2>/dev/null || echo "0")
+          ERROR_COUNT=$(grep -c '"level": "error"' "$SARIF_FILE" 2>/dev/null || echo "0")
+          WARNING_COUNT=$(grep -c '"level": "warning"' "$SARIF_FILE" 2>/dev/null || echo "0")
+          NOTE_COUNT=$(grep -c '"level": "note"' "$SARIF_FILE" 2>/dev/null || echo "0")
+        fi
+
+        # Determine badge
+        if [ "$TOTAL" -eq 0 ]; then
+          BADGE_STATUS="passing"
+          BADGE_COLOR="brightgreen"
+        elif [ "$ERROR_COUNT" -gt 0 ]; then
+          BADGE_STATUS="failing"
+          BADGE_COLOR="red"
+        else
+          BADGE_STATUS="warning"
+          BADGE_COLOR="yellow"
+        fi
+
+        {
+          echo "findings_count=${TOTAL}"
+          echo "error_count=${ERROR_COUNT}"
+          echo "warning_count=${WARNING_COUNT}"
+          echo "note_count=${NOTE_COUNT}"
+          echo "badge_status=${BADGE_STATUS}"
+          echo "badge_color=${BADGE_COLOR}"
+        } >> "$GITHUB_OUTPUT"
+
+        # Summary annotation
+        if [ "$TOTAL" -eq 0 ]; then
+          echo "::notice::MCP Security Scan passed with no findings."
+        else
+          echo "::warning::MCP Security Scan found ${TOTAL} finding(s): ${ERROR_COUNT} error, ${WARNING_COUNT} warning, ${NOTE_COUNT} note."
+        fi
+
+    # ── Step 4: Upload SARIF to GitHub Code Scanning ────────────────────
+    - name: Upload SARIF to Code Scanning
+      if: ${{ inputs.sarif-upload == 'true' && steps.scan.outputs.sarif_file != '' }}
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ steps.scan.outputs.sarif_file }}
+        category: mcp-security
+        wait-for-processing: true
+      continue-on-error: true
+
+    # ── Step 5: Post PR comment ─────────────────────────────────────────
+    - name: Post PR comment with scan results
+      if: ${{ inputs.comment == 'true' && github.event_name == 'pull_request' }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        FINDINGS_TOTAL: ${{ steps.analyze.outputs.findings_count }}
+        ERROR_COUNT: ${{ steps.analyze.outputs.error_count }}
+        WARNING_COUNT: ${{ steps.analyze.outputs.warning_count }}
+        NOTE_COUNT: ${{ steps.analyze.outputs.note_count }}
+        BADGE_STATUS: ${{ steps.analyze.outputs.badge_status }}
+        BADGE_COLOR: ${{ steps.analyze.outputs.badge_color }}
+        REPORT_FILE: ${{ steps.scan.outputs.report_file }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        set -uo pipefail
+
+        # ── Determine status display ──
+        case "$BADGE_STATUS" in
+          passing)  STATUS_ICON=":white_check_mark:"; STATUS_TEXT="Passed" ;;
+          warning)  STATUS_ICON=":warning:"; STATUS_TEXT="Warning" ;;
+          failing)  STATUS_ICON=":x:"; STATUS_TEXT="Failed" ;;
+          *)        STATUS_ICON=":grey_question:"; STATUS_TEXT="Unknown" ;;
+        esac
+
+        # ── Build comment body ──
+        MARKER="<!-- mcp-audit-results -->"
+
+        BODY="${MARKER}
+        ## :shield: MCP Security Scan Results
+
+        **Status:** ${STATUS_ICON} **${STATUS_TEXT}**
+
+        | Severity | Count |
+        |----------|------:|
+        | :red_circle: Critical / High | ${ERROR_COUNT} |
+        | :yellow_circle: Medium | ${WARNING_COUNT} |
+        | :large_blue_circle: Low / Info | ${NOTE_COUNT} |
+
+        **Total findings:** ${FINDINGS_TOTAL}
+
+        ![MCP Security](https://img.shields.io/badge/MCP_Security-${BADGE_STATUS}-${BADGE_COLOR:-gray})"
+
+        # Append full report if available
+        if [ -f "$REPORT_FILE" ] && [ -s "$REPORT_FILE" ]; then
+          BODY="${BODY}
+
+        <details>
+        <summary>:clipboard: Full Scan Report</summary>
+
+        $(cat "$REPORT_FILE")
+
+        </details>"
+        fi
+
+        BODY="${BODY}
+
+        ---
+        *Scanned by [MCP Security Scanner](https://github.com/Norbi0801/mcp-audit) | OWASP MCP Top 10*"
+
+        # ── Find existing comment and update, or create new ──
+        EXISTING_ID=""
+        if command -v gh &>/dev/null; then
+          EXISTING_ID=$(
+            gh api "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" \
+              --paginate \
+              --jq ".[] | select(.body | contains(\"${MARKER}\")) | .id" \
+              2>/dev/null | head -1
+          ) || true
+        fi
+
+        if [ -n "$EXISTING_ID" ]; then
+          echo "Updating existing PR comment ${EXISTING_ID}"
+          gh api "repos/${{ github.repository }}/issues/comments/${EXISTING_ID}" \
+            --method PATCH --field body="${BODY}" >/dev/null 2>&1 \
+            || echo "::warning::Failed to update PR comment"
+        else
+          echo "Creating new PR comment"
+          gh api "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" \
+            --method POST --field body="${BODY}" >/dev/null 2>&1 \
+            || echo "::warning::Failed to create PR comment"
+        fi
+
+    # ── Step 6: Write Job Summary ───────────────────────────────────────
+    - name: Write job summary
+      if: ${{ always() }}
+      shell: bash
+      env:
+        FINDINGS_TOTAL: ${{ steps.analyze.outputs.findings_count }}
+        ERROR_COUNT: ${{ steps.analyze.outputs.error_count }}
+        WARNING_COUNT: ${{ steps.analyze.outputs.warning_count }}
+        NOTE_COUNT: ${{ steps.analyze.outputs.note_count }}
+        BADGE_STATUS: ${{ steps.analyze.outputs.badge_status }}
+        BADGE_COLOR: ${{ steps.analyze.outputs.badge_color }}
+        REPORT_FILE: ${{ steps.scan.outputs.report_file }}
+      run: |
+        set -uo pipefail
+
+        TOTAL="${FINDINGS_TOTAL:-0}"
+        ERRORS="${ERROR_COUNT:-0}"
+        WARNINGS="${WARNING_COUNT:-0}"
+        NOTES="${NOTE_COUNT:-0}"
+        STATUS="${BADGE_STATUS:-unknown}"
+        COLOR="${BADGE_COLOR:-gray}"
+
+        {
+          echo "## :shield: MCP Security Scan"
+          echo ""
+          echo "![MCP Security](https://img.shields.io/badge/MCP_Security-${STATUS}-${COLOR})"
+          echo ""
+          if [ "$TOTAL" -eq 0 ]; then
+            echo ":white_check_mark: **No security findings.** Your MCP configuration is clean."
+          else
+            echo "| Severity | Count |"
+            echo "|----------|------:|"
+            echo "| :red_circle: Critical / High | ${ERRORS} |"
+            echo "| :yellow_circle: Medium | ${WARNINGS} |"
+            echo "| :large_blue_circle: Low / Info | ${NOTES} |"
+            echo ""
+            echo "**Total:** ${TOTAL} finding(s)"
+          fi
+          echo ""
+
+          if [ -f "${REPORT_FILE:-}" ] && [ -s "${REPORT_FILE:-}" ]; then
+            echo "<details>"
+            echo "<summary>:clipboard: Full Report</summary>"
+            echo ""
+            cat "$REPORT_FILE"
+            echo ""
+            echo "</details>"
+          fi
+
+          echo ""
+          echo "---"
+          echo "*Scanned by [MCP Security Scanner](https://github.com/Norbi0801/mcp-audit)*"
+        } >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
+
+    # ── Step 7: Enforce severity threshold ──────────────────────────────
+    - name: Enforce severity threshold
+      if: ${{ inputs.fail-on != 'none' }}
+      shell: bash
+      env:
+        FAIL_ON: ${{ inputs.fail-on }}
+        SCAN_EXIT: ${{ steps.scan.outputs.exit_code }}
+        FINDINGS_TOTAL: ${{ steps.analyze.outputs.findings_count }}
+        ERROR_COUNT: ${{ steps.analyze.outputs.error_count }}
+        WARNING_COUNT: ${{ steps.analyze.outputs.warning_count }}
+        NOTE_COUNT: ${{ steps.analyze.outputs.note_count }}
+      run: |
+        set -euo pipefail
+
+        TOTAL="${FINDINGS_TOTAL:-0}"
+        ERRORS="${ERROR_COUNT:-0}"
+        WARNINGS="${WARNING_COUNT:-0}"
+        NOTES="${NOTE_COUNT:-0}"
+        EXIT="${SCAN_EXIT:-0}"
+
+        SHOULD_FAIL=false
+
+        case "$FAIL_ON" in
+          critical|high)
+            if [ "$EXIT" -eq 1 ] || [ "$ERRORS" -gt 0 ]; then
+              SHOULD_FAIL=true
+            fi
+            ;;
+          medium)
+            if [ "$ERRORS" -gt 0 ] || [ "$WARNINGS" -gt 0 ]; then
+              SHOULD_FAIL=true
+            fi
+            ;;
+          low|info)
+            if [ "$TOTAL" -gt 0 ]; then
+              SHOULD_FAIL=true
+            fi
+            ;;
+          none)
+            ;;
+          *)
+            echo "::warning::Unknown fail-on value '${FAIL_ON}', treating as 'high'."
+            if [ "$EXIT" -eq 1 ] || [ "$ERRORS" -gt 0 ]; then
+              SHOULD_FAIL=true
+            fi
+            ;;
+        esac
+
+        if [ "$SHOULD_FAIL" = "true" ]; then
+          echo "::error::MCP Security Scan failed: ${TOTAL} finding(s) at or above '${FAIL_ON}' severity threshold."
+          exit 1
+        fi
+
+        echo "Severity threshold '${FAIL_ON}' not exceeded."
